@@ -474,10 +474,15 @@ button:disabled { cursor: default; filter: none; }
   background: var(--accent-soft);
 }
 .blob .cover { width: 100%; height: 100%; object-fit: cover; display: block; }
-/* Four shapes, rotating with position, so a grid never repeats a silhouette side by side. */
-.media:nth-child(4n+2) .blob { border-radius: 55% 45% 50% 50%; }
-.media:nth-child(4n+3) .blob { border-radius: 50% 50% 45% 55%; }
-.media:nth-child(4n+4) .blob { border-radius: 45% 55% 58% 42%; }
+/* Seven silhouettes, rotating with position, so a grid never repeats one side
+   by side. All seven are from the design mockups; the source app shipped the
+   first four. They apply to media cards and to cards with a card-head. */
+:is(.media, .card):nth-child(7n+2) .blob { border-radius: 55% 45% 50% 50%; }
+:is(.media, .card):nth-child(7n+3) .blob { border-radius: 50% 50% 45% 55%; }
+:is(.media, .card):nth-child(7n+4) .blob { border-radius: 45% 55% 58% 42%; }
+:is(.media, .card):nth-child(7n+5) .blob { border-radius: 55% 45% 42% 58%; }
+:is(.media, .card):nth-child(7n+6) .blob { border-radius: 48% 52% 55% 45%; }
+:is(.media, .card):nth-child(7n+7) .blob { border-radius: 45% 55% 50% 50%; }
 
 /* ── Media card: a blob, a title, an info panel and a row of actions ─────── */
 

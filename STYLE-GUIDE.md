@@ -192,8 +192,10 @@ a pill.
 | `--r-tight` | 12px | an action's focus box, the note over a row |
 | `--r-hair` | 6px | inline code |
 
-Circles are `50%`. The blob is four percentage quads that rotate with position in a
-grid, so two neighbours never share a silhouette.
+Circles are `50%`. The blob is seven percentage quads that rotate with position in a
+grid, so two neighbours never share a silhouette: `42% 58% 55% 45%`, `55% 45% 50% 50%`,
+`50% 50% 45% 55%`, `45% 55% 58% 42%`, `55% 45% 42% 58%`, `48% 52% 55% 45%`,
+`45% 55% 50% 50%`.
 
 ---
 
@@ -355,7 +357,8 @@ underneath holds radio options.
 ### Blob · extracted
 
 A 76px organic shape with `overflow: hidden`; put an `img.cover` inside or leave it as a
-colour. Four silhouettes rotate with position in a `.media` grid.
+colour. Seven silhouettes rotate with position, on `.media` cards and on `.card`s with
+a card-head, so neighbours in a grid never match.
 
 ### Media card · extracted
 
@@ -597,6 +600,8 @@ The full table is in [docs/design.md](docs/design.md#renamed-for-portability).
 6. **The row's external-link action is not carried over.**
 7. **`--scrim` is derived**; the source has no dialog.
 8. **`[data-scheme]` works on any wrapper**, not only `<html>`, in both directions.
+9. **Seven blob silhouettes.** The mockups had seven; the app shipped four. The kit
+   carries all seven.
 
 ---
 

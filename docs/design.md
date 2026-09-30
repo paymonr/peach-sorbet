@@ -244,9 +244,22 @@ Deviations) because they were within a tenth of a rem of a neighbour.
 | `--r-tight` | 12px | action buttons' focus box, the note over a row |
 | `--r-hair` | 6px | inline code |
 
-Circles are `50%`. The blob is four percentage quads, one per position in a grid so
-neighbours never share a silhouette: `42% 58% 55% 45%`, `55% 45% 50% 50%`,
-`50% 50% 45% 55%`, `45% 55% 58% 42%`.
+Circles are `50%`. The blob is seven percentage quads, rotating by position in a grid
+so neighbours never share a silhouette, on media cards and on cards with a card-head:
+
+| # | Corners | In the mockups | In the source app |
+| --- | --- | --- | --- |
+| 1 | `42% 58% 55% 45%` | yes | yes |
+| 2 | `55% 45% 50% 50%` | yes | yes |
+| 3 | `50% 50% 45% 55%` | yes | yes |
+| 4 | `45% 55% 58% 42%` | yes | yes |
+| 5 | `55% 45% 42% 58%` | yes | no |
+| 6 | `48% 52% 55% 45%` | yes | no |
+| 7 | `45% 55% 50% 50%` | yes | no |
+
+The design mockups used all seven across their four boards; the app kept the first
+four. The kit carries the full set, since it is the record of the design rather than
+of one build of it (see Deviations).
 
 ## Spacing
 
@@ -382,6 +395,9 @@ Faithful everywhere except these, each a deliberate call:
 6. **The media row's external-link action is not carried over.** It was specific to
    the source's provider; a row's actions are plain `.act` buttons.
 7. **`--scrim` is derived.** The source has no dialog.
+9. **Seven blob silhouettes, not four.** The design mockups had seven; the app shipped
+   four of them. The kit restores the three the app dropped and rotates through all
+   seven. The app can adopt the same set when it is next touched.
 8. **`[data-scheme]` works on any wrapper**, not only `:root`, and in both directions:
    the light tokens are declared for `:root, [data-scheme="light"]`, so a light panel
    can sit on a dark page as well as the reverse. The source only ever set it on
