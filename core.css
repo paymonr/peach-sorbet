@@ -474,6 +474,9 @@ button:disabled { cursor: default; filter: none; }
   background: var(--accent-soft);
 }
 .blob .cover { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* A cover with the hidden attribute stays hidden: display: block above would
+   otherwise beat it and draw an empty image inside the blob. */
+.blob .cover[hidden] { display: none; }
 /* Seven silhouettes, rotating with position, so a grid never repeats one side
    by side. All seven are from the design mockups; the source app shipped the
    first four. They apply to media cards and to cards with a card-head. */
