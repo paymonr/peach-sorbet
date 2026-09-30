@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#fff4ec">
+<title>peach-sorbet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="core.css">
+<link rel="stylesheet" href="tint.css" id="tint-css">
+<style>
+  /* ── Demo chrome ─────────────────────────────────────────────────────────
+     The gallery's own scaffolding: swatch grids, the radius and type rows,
+     and one rule that lets the dock sit inline. NOT part of the kit. It
+     reads kit tokens, which is allowed; it defines no colours of its own.
+     Everything under "Assembled" uses kit classes only. */
+  .demo-entry { margin-bottom: 28px; }
+  .demo-entry:last-child { margin-bottom: 0; }
+  .demo-entry-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .demo-entry-head h3 { margin: 0; }
+  .demo-entry > p.muted { margin: -4px 0 12px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+  .swatch { border-radius: var(--r-control); overflow: hidden; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); }
+  .swatch-chips { display: flex; height: 40px; }
+  .swatch-chips > i { flex: 1; }
+  .swatch-meta { padding: 6px 10px; font-size: var(--fs-tiny); line-height: 1.35; }
+  .swatch-meta b { display: block; font-weight: 700; word-break: break-all; }
+  .swatch-meta span { color: var(--muted); font-family: ui-monospace, monospace; font-size: 0.7rem; }
+
+  .rads { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end; }
+  .rad { text-align: center; font-size: var(--fs-tiny); font-weight: 700; color: var(--muted); }
+  .rad div { width: 64px; height: 64px; background: var(--lavender); margin-bottom: 4px; }
+
+  .types { display: grid; gap: 6px; }
+  .type-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; border-bottom: 1px dashed var(--line); padding-bottom: 4px; }
+  .type-row code { min-width: 10.5rem; font-size: 0.7rem; color: var(--muted); background: none; padding: 0; }
+
+  .demo-inline .dock { position: static; width: auto; margin: 0; }
+  .demo-hues { display: flex; flex-wrap: wrap; gap: 8px; }
+  .demo-sliders label { max-width: 360px; }
+  .demo-sliders input[type=range] { accent-color: var(--accent); width: 100%; }
+  #hue-file { font: inherit; }
+  .demo-scheme-note { display: none; }
+  [data-scheme="dark"] .demo-scheme-note { display: inline; }
+</style>
+</head>
+<body class="shell">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top">
+  <a class="brand" href="#top">peach-sorbet</a>
+  <a class="avatar" href="#tokens" aria-label="Tokens">🍑</a>
+</header>
+
+<nav class="nav" aria-label="Sections">
+  <a class="brand" href="#top">peach-sorbet</a>
+  <a class="nav-tab" href="#tokens" aria-current="page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5a8.5 8.5 0 1 0 0 17c1.4 0 2-.9 2-1.8 0-.6-.3-1-.7-1.4-.4-.4-.6-.8-.6-1.3 0-.9.7-1.5 1.6-1.5H16a4.5 4.5 0 0 0 4.5-4.5C20.5 6.4 16.7 3.5 12 3.5z"/><circle cx="8" cy="9.5" r="1.1" fill="currentColor"/><circle cx="12" cy="7.5" r="1.1" fill="currentColor"/><circle cx="16" cy="9.5" r="1.1" fill="currentColor"/></svg>
+    <span>Tokens</span>
+  </a>
+  <a class="nav-tab" href="#components">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></svg>
+    <span>Components</span>
+  </a>
+  <a class="nav-tab" href="#tinted">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5s6 6.4 6 10.6a6 6 0 0 1-12 0C6 9.9 12 3.5 12 3.5z"/></svg>
+    <span>Tinted</span>
+  </a>
+  <a class="nav-tab" href="#assembled">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11.5 12 5l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5h-5v5H5a1 1 0 0 1-1-1z"/></svg>
+    <span>Assembled</span>
+  </a>
+  <a class="nav-tab wide" href="https://github.com/paymonr/peach-sorbet">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 5h5v5M19 5l-8 8M10 6H6a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4"/></svg>
+    <span>GitHub</span>
+  </a>
+  <div class="nav-foot"><span class="muted small">MIT · two files, no build step</span></div>
+</nav>
+
+<main class="main" id="main">
+  <h1 id="top">peach-sorbet</h1>
+  <p class="lede">A small CSS kit with a soft look: a peach ground, pastel cards, blob-shaped covers and one purple accent. Two files, no build step.</p>
+
+  <div class="row" style="margin-bottom: 24px">
+    <div class="segmented" role="group" aria-label="Scheme">
+      <button type="button" data-set-scheme="light" aria-pressed="true">Light</button>
+      <button type="button" data-set-scheme="dark" aria-pressed="false">Dark</button>
+      <button type="button" data-set-scheme="device" aria-pressed="false">Match my device</button>
+    </div>
+    <button type="button" class="secondary" id="toggle-tint">Turn tint.css off</button>
+  </div>
+  <p class="muted small">This page is the kit's own shell: a sidebar on a wide screen, a floating tab bar on a phone. Resize it.</p>
+
+  <!-- ══ Tokens ══════════════════════════════════════════════════════════ -->
+  <section id="tokens">
+    <h2>Tokens</h2>
+    <div class="card">
+      <div class="demo-entry">
+        <div class="demo-entry-head"><h3>Colour</h3><span class="badge" id="token-count">core.css</span></div>
+        <p class="muted small">Every colour, read off the stylesheet. Each swatch shows its light value on the left and its dark value on the right.</p>
+        <div class="swatches" id="sw-colour"></div>
+      </div>
+      <div class="demo-entry">
+        <div class="demo-entry-head"><h3>The six pastels</h3></div>
+        <p class="muted small">Tiles rotate through the first four; media cards through all six. In light mode three of the state tints equal a pastel; in dark mode they don't, so components read the state token.</p>
+        <div class="swatches" id="sw-pastel"></div>
+      </div>
+      <div class="demo-entry">
+        <div class="demo-entry-head"><h3>Radius ladder</h3></div>
+        <p class="muted small">Pick by the role of the box. Anything small and interactive is a pill.</p>
+        <div class="rads">
+          <div class="rad"><div style="border-radius: var(--r-bar)"></div>bar 32</div>
+          <div class="rad"><div style="border-radius: var(--r-feature)"></div>feature 28</div>
+          <div class="rad"><div style="border-radius: var(--r-card)"></div>card 24</div>
+          <div class="rad"><div style="border-radius: var(--r-row)"></div>row 20</div>
+          <div class="rad"><div style="border-radius: var(--r-control)"></div>control 16</div>
+          <div class="rad"><div style="border-radius: var(--r-tight)"></div>tight 12</div>
+          <div class="rad"><div style="border-radius: var(--r-hair)"></div>hair 6</div>
+          <div class="rad"><div style="border-radius: var(--r-pill)"></div>pill 999</div>
+          <div class="rad"><div class="blob" style="width:64px;height:64px;background:var(--lavender)"></div>blob</div>
+        </div>
+      </div>
+      <div class="demo-entry">
+        <div class="demo-entry-head"><h3>Type</h3></div>
+        <p class="muted small">Fredoka at 600 for display: headings, the brand, big numbers, card titles. Figtree for everything else, with weight carrying the hierarchy.</p>
+        <div class="types">
+          <div class="type-row"><code>--fs-h1 2.1rem · Fredoka</code><span style="font-family:var(--display);font-size:var(--fs-h1);font-weight:600;line-height:1.15">Page heading</span></div>
+          <div class="type-row"><code>--fs-value 1.9rem · Fredoka</code><span style="font-family:var(--display);font-size:var(--fs-value);font-weight:600">1,284</span></div>
+          <div class="type-row"><code>--fs-h2 1.35rem · Fredoka</code><span style="font-family:var(--display);font-size:var(--fs-h2);font-weight:600">Section heading</span></div>
+          <div class="type-row"><code>--fs-title 1.3rem · Fredoka</code><span style="font-family:var(--display);font-size:var(--fs-title);font-weight:600">Card title</span></div>
+          <div class="type-row"><code>--fs-h3 1.1rem</code><span style="font-size:var(--fs-h3);color:var(--muted)">A lede under the heading</span></div>
+          <div class="type-row"><code>--fs-base 1rem</code><span>Body text, at 1.5 line height</span></div>
+          <div class="type-row"><code>--fs-ui .925rem · 600</code><span style="font-size:var(--fs-ui);font-weight:600">Chips, labels, segmented controls</span></div>
+          <div class="type-row"><code>--fs-small .875rem</code><span style="font-size:var(--fs-small)">Notes and meta lines</span></div>
+          <div class="type-row"><code>--fs-label .8rem · 600</code><span style="font-size:var(--fs-label);font-weight:600;color:var(--muted)">Table headers</span></div>
+          <div class="type-row"><code>--fs-label · eyebrow</code><span class="eyebrow" style="margin:0">Yesterday</span></div>
+          <div class="type-row"><code>--fs-tiny .75rem · 700</code><span style="font-size:var(--fs-tiny);font-weight:700">Badges, action labels, pills</span></div>
+          <div class="type-row"><code>--fs-tab .72rem · 600</code><span style="font-size:var(--fs-tab);font-weight:600">Tab bar labels</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ Components ══════════════════════════════════════════════════════ -->
+  <section id="components">
+    <h2>Components</h2>
+    <p class="muted small"><span class="badge ok">extracted</span> means lifted from the source app and proven in production. <span class="badge">designed</span> means added here because that app never needed it.</p>
+
+    <div class="card">
+      <div class="demo-entry">
+        <div class="demo-entry-head"><h3>Cards</h3><span class="badge ok">extracted</span></div>
+        <p class="muted small">A card has no border. Separation comes from colour: white on the peach ground, or a pastel for a notice.</p>
+        <div class="grid" style="margin-bottom:0">
+          <div class="card" style="margin:0"><h3 style="margin-top:0">Plain</h3><p>The default surface. Headings lose their top margin as a first child.</p></div>
+          <div class="card notice" style="margin:0"><strong>Notice.</strong> Lavender, for something worth knowing. <a href="#top">A link</a> inside it.</div>
+          <div class="card warning" style="margin:0"><strong>Warning.</strong> Butter, for something that needs attention.</div>
+          <div class="card error" style="margin:0"><strong>Error.</strong> Pink, for something that failed.</div>
+        </div>
+      </div>
+
+      <div class="demo-entry">
+        <div class="demo-entry-head"><h3>Strip</h3><span class="badge ok">extracted</span></div>
+        <div class="strip" style="margin-bottom:0">
+          <span>Your weekly digest: <a href="#top">Week 39</a> <span class="muted">· 24 items · updated an hour ago</span></span>
+          <button type="button" class="secondary">Update it now</button>
+          <a class="muted" href="#top">Settings</a>
+        </div>
+      </div>
+
+      <div class="demo-entry">
+        <div class="demo-entry-head"><h3>Tiles</h3><span class="badge ok">extracted</span></div>
+        <div class="tiles" style="margin-bottom:0">
+          <div class="tile"><div class="value">1,284</div><div class="label">items this week</div></div>
+          <div class="tile"><div class="value">96</div><div class="label">hours</div></div>
+          <div class="tile"><div class="value">312</div><div class="label">different sources</div></div>
+          <div class="tile"><div class="value">48</div><div class="label">people</div></div>
+        </div>
+      </div>
+
+      <div class="demo-entry">
+        <div class="demo-entry-head"><h3>Chips</h3><span class="badge ok">extracted</span></div>
+        <div class="chips" style="margin-bottom:8px">
+          <a class="chip active" href="#top">7 days</a>
+          <a class="chip" href="#top">30 days</a>
+          <a class="chip" href="#top">Year</a>
+          <a class="chip" href="#top">All time</a>
+        </div>
+        <ul class="chips" style="margin-bottom:0">
+          <li class="chip tag"><span>Rhubarb</span><span class="muted small">82%</span><button type="button" class="chip-x" aria-label="Take off rhubarb">×</button></li>
+          <li class="chip tag added"><span>Custard</span><span class="muted small">added</span><button type="button" class="chip-x" aria-label="Take off custard">×</button></li>
+          <li class="chip tag removed"><s>Prune</s><button type="button" class="link small">Put back</button></li>
+        </ul>
+      </div>
+
+      <div class="demo-entry">
+        <div class="demo-entry-head"><h3>Tabs and segmented control</h3><span class="badge ok">extracted</span></div>
+        <nav class="tabs" aria-label="Example tabs">
+          <a href="#top" class="active" aria-current="page">Everything</a>
+          <a href="#top"><span class="tab-dot tint" style="--h:350;--accent-c:.15" aria-hidden="true"></span>Berries</a>
+          <a href="#top"><span class="tab-dot tint" style="--h:100;--accent-c:.10" aria-hidden="true"></span>Citrus</a>
+          <a href="#top"><span class="tab-dot tint" style="--h:155;--accent-c:.11" aria-hidden="true"></span>Herbs</a>
+        </nav>
+        <nav class="segmented" aria-label="View" style="width:max-content">
+          <a href="#top" aria-current="true">Cards</a>
+          <a href="#top">List</a>
+        </nav>
+      </div>
+
+      <div class="demo-entry">
+        <div class="demo-entry-head"><h3>Badges</h3><span class="badge ok">extracted</span></div>
+        <div class="row">
+          <span class="badge">Queued</span>
+          <span class="badge ok">Done</span>
+          <span class="badge warn">Waiting</span>
+          <span class="badge bad">Failed</span>
+          <span class="badge">Made here</span>
+        </div>
+      </div>
+
+      <div class="demo-entry">
+        <div class="demo-entry-head"><h3>Buttons</h3><span class="badge ok">extracted</span><span class="badge">danger is designed</span></div>
+        <div class="row">
+          <button type="button">Save</button>
+          <button type="button" class="secondary">Sync now</button>
+          <button type="button" class="small-button secondary">Add</button>
+          <button type="button" class="danger">Delete</button>
+          <button type="button" disabled>Working…</button>
+          <button type="button" class="link">Sign out</button>
+          <a class="button" href="#top">A link as a button</a>
+        </div>
+      </div>
+
+      <div class="demo-entry">
+        <div class="demo-entry-head"><h3>Actions</h3><span class="badge ok">extracted</span></div>
+        <p class="muted small">Stacked icon-and-label buttons, the row under a media card. One is <code>.primary</code>; a pressed one shows <code>aria-pressed</code>.</p>
+        <div class="media-actions" style="max-width: 360px">
+          <button type="button" class="act primary"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z"/></svg></span><span>Play</span></button>
+          <button type="button" class="act" aria-pressed="true"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z"/></svg></span><span>Love</span></button>
+          <button type="button" class="act" aria-pressed="false"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span><span>Nah</span></button>
+          <button type="button" class="act" aria-pressed="false"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span>Know it</span></button>
+          <button type="button" class="act on" disabled><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span>Saved</span></button>
+        </div>
+      </div>
+
+      <div class="demo-entry">
+        <div class="demo-entry-head"><h3>Forms</h3><span class="badge ok">extracted</span><span class="badge">textarea is designed</span></div>
+        <form class="stack" onsubmit="return false">
+          <label>Name <input type="text" value="Peach sorbet" required></label>
+          <label>Show times in
+            <select><option>The server's time zone</option><option>Europe/London</option><option>America/Toronto</option></select>
+          </label>
+          <label>Notes <textarea placeholder="Anything worth remembering…"></textarea></label>
+          <fieldset class="choices">
+            <legend class="visually-hidden">Scheme</legend>
+            <label class="check"><input type="radio" name="d-scheme" checked> Light</label>
+            <label class="check"><input type="radio" name="d-scheme"> Dark</label>
+            <label class="check"><input type="radio" name="d-scheme"> Match my device</label>
+          </fieldset>
+          <label class="check"><input type="checkbox" checked> Update it every week</label>
+          <div class="row"><button type="button" class="secondary">Use this device's</button><button type="submit">Save</button></div>
+        </form>
+      </div>
+
+      <div class="demo-entry">
+        <div class="demo-entry-head"><h3>Search bar</h3><span class="badge ok">extracted</span></div>
+        <form class="search-form" role="search" onsubmit="return false" style="margin-bottom:0">
+          <label for="d-q" class="visually-hidden">Search</label>
+          <input type="search" id="d-q" placeholder="A link, “maker – thing”, or a name" autocomplete="off">
+          <button type="submit">Search</button>
+          <div class="search-modes small" role="radiogroup" aria-label="Search for">
+            <label class="check"><input type="radio" name="d-mode" checked> More like this</label>
+            <label class="check"><input type="radio" name="d-mode"> Describe it</label>
+            <label class="check"><input type="checkbox"> Only what I don't know</label>
+          </div>
+        </form>
+      </div>
+
+      <div class="demo-entry">
+        <div class="demo-entry-head"><h3>Table</h3><span class="badge ok">extracted</span></div>
+        <div class="card scroll" style="margin:0">
+          <table>
+            <thead><tr><th>#</th><th>Item</th><th class="num">Count</th><th class="num">Rate</th></tr></thead>
+            <tbody>
+              <tr><td class="muted">1</td><td><div class="name">Blood orange</div><div class="muted small">Citrus · Sicily</div></td><td class="num">142</td><td class="num">4%</td></tr>
+              <tr><td class="muted">2</td><td><div class="name">White peach</div><div class="muted small">Stone fruit · Piedmont</div></td><td class="num">98</td><td class="num">11%</td></tr>
+              <tr><td class="muted">3</td><td><div class="name">Yuzu</div><div class="muted small">Citrus · Kōchi</div></td><td class="num">61</td><td class="num">–</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="demo-entry">
+        <div class="demo-entry-head"><h3>Facts and schedule</h3><span class="badge ok">extracted</span></div>
+        <dl class="facts card" style="margin:0">
+          <dt>Last check</dt><dd>Two minutes ago; next in about eight.</dd>
+          <dt>Scheduled</dt>
+          <dd><ul class="schedule">
+            <li><time>03:00</time> Nightly refresh<span class="muted">, nightly</span></li>
+            <li><time>07:30</time> Weekly digest<span class="muted">, Monday</span></li>
+          </ul></dd>
+        </dl>
+      </div>
+
+      <div class="demo-entry">
+        <div class="demo-entry-head"><h3>Bars and progress</h3><span class="badge ok">extracted</span></div>
+        <div class="card" style="margin:0 0 12px">
+          <ul class="bars">
+            <li><span class="bar-name">Citrus</span><span class="bar"><span style="width:62%"></span></span><span class="num small">62%</span></li>
+            <li class="tint" style="--h:350;--c:.045;--accent-c:.15"><span class="bar-name">Berries</span><span class="bar"><span style="width:24%"></span></span><span class="num small">24%</span></li>
+            <li class="tint" style="--h:155;--c:.045;--accent-c:.11"><span class="bar-name">Herbs</span><span class="bar"><span style="width:9%"></span></span><span class="num small">9%</span></li>
+            <li class="tint"><span class="bar-name">No match</span><span class="bar"><span style="width:5%"></span></span><span class="num small">5%</span></li>
+          </ul>
+        </div>
+        <div class="progress" aria-hidden="true" style="max-width:360px"><div style="width:38%"></div></div>
+      </div>
+
+      <div class="demo-entry">
+        <div class="demo-entry-head"><h3>List</h3><span class="badge ok">extracted</span></div>
+        <ul class="list" style="margin:0">
+          <li><span class="lines"><a href="#top">Blood orange</a><span class="small muted"><span class="dot mini tint" style="--h:55;--accent-c:.14" aria-hidden="true"></span>Citrus · sicilian, winter</span></span><span class="muted small">142 plays</span></li>
+          <li><span class="lines"><a href="#top">White peach</a><span class="small muted"><span class="dot mini tint" style="--h:70;--accent-c:.14" aria-hidden="true"></span>Stone fruit · summer</span></span><span class="muted small">98 plays</span></li>
+          <li><span><strong>Yuzu</strong> <span class="muted small">2,100 listeners</span></span><button type="button" class="secondary small-button">Add</button></li>
+        </ul>
+      </div>
+
+      <div class="demo-entry">
+        <div class="demo-entry-head"><h3>Card head with a blob</h3><span class="badge ok">extracted</span></div>
+        <div class="grid" style="margin-bottom:0">
+          <article class="card tint" style="margin:0;--h:350;--c:.045;--blob-c:.10;--accent-c:.15">
+            <div class="card-head"><div class="blob" aria-hidden="true"><span class="dot"></span></div><div><h2>Berries</h2><p class="small">1,204 plays · 38 makers</p></div></div>
+            <p class="small"><strong>Tags:</strong> strawberry, raspberry, blackcurrant</p>
+          </article>
+          <article class="card tint" style="margin:0">
+            <div class="card-head"><div class="blob" aria-hidden="true"><span class="dot"></span></div><div><h2>No match</h2><p class="small">Nothing in this period</p></div></div>
+            <p class="small">Stone: the default when nothing sets a hue.</p>
+          </article>
+        </div>
+      </div>
+
+      <div class="demo-entry">
+        <div class="demo-entry-head"><h3>Media cards</h3><span class="badge ok">extracted</span></div>
+        <p class="muted small">Without <code>.tint</code>, cards rotate through the six pastels. Long lines glide sideways; hover to pause.</p>
+        <div class="media-grid" style="margin-bottom:0">
+          <article class="media">
+            <div class="blob"><img class="cover" alt="" width="76" height="76" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23ffb3c6'/%3E%3Cstop offset='1' stop-color='%23a63f66'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='10' height='10' fill='url(%23g)'/%3E%3Ccircle cx='6.5' cy='3.5' r='2.2' fill='%23fff' fill-opacity='.35'/%3E%3C/svg%3E"></div>
+            <div class="media-body">
+              <h3 class="title marquee"><span>Raspberry ripple with a very long name that will not fit</span></h3>
+              <p class="subtitle marquee"><span>Sorbet · Summer menu</span></p>
+              <a class="media-link" href="#top">Open the recipe</a>
+            </div>
+            <div class="media-info">
+              <p class="line marquee"><span>Like “White peach”, which you've made twice this month</span></p>
+              <p class="line tags marquee"><span>Berries · Frozen · No dairy</span></p>
+            </div>
+            <div class="media-actions">
+              <button type="button" class="act primary"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z"/></svg></span><span>Play</span></button>
+              <button type="button" class="act" aria-pressed="false"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z"/></svg></span><span>Love</span></button>
+              <button type="button" class="act" aria-pressed="false"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span><span>Nah</span></button>
+              <button type="button" class="act" aria-pressed="false"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span><span>Save</span></button>
+            </div>
+          </article>
+          <article class="media dimmed">
+            <div class="blob"></div>
+            <div class="media-body">
+              <h3 class="title marquee"><span>Lemon and thyme</span></h3>
+              <p class="subtitle marquee"><span>Granita · Spring menu</span></p>
+            </div>
+            <div class="media-info">
+              <p class="line">Nah. You won't get it again.</p>
+              <p class="line muted small">Its tags count a little against similar things.</p>
+            </div>
+            <div class="media-actions">
+              <button type="button" class="act primary"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z"/></svg></span><span>Play</span></button>
+              <button type="button" class="act" aria-pressed="false"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z"/></svg></span><span>Love</span></button>
+              <button type="button" class="act" aria-pressed="true"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span><span>Nah</span></button>
+              <button type="button" class="act" aria-pressed="false"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span><span>Save</span></button>
+            </div>
+          </article>
+          <article class="media selected">
+            <div class="blob"><img class="cover" alt="" width="76" height="76" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='1' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%23d7f5e7'/%3E%3Cstop offset='1' stop-color='%23007f43'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='10' height='10' fill='url(%23g)'/%3E%3Ccircle cx='3.5' cy='6.5' r='2.2' fill='%23fff' fill-opacity='.35'/%3E%3C/svg%3E"></div>
+            <div class="media-body">
+              <h3 class="title marquee"><span>Mint and cucumber</span></h3>
+              <p class="subtitle marquee"><span>Sorbet · Playing now</span></p>
+              <a class="media-link" href="#top">Open the recipe</a>
+            </div>
+            <div class="media-info">
+              <p class="line marquee"><span>Sounds like your favourites</span></p>
+              <p class="line tags marquee"><span>Herbs · Frozen</span></p>
+              <p class="note error" role="alert">Couldn't save it. Try again.</p>
+            </div>
+            <div class="media-actions">
+              <button type="button" class="act primary"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.5 4.5h3.5v15H6.5zM14 4.5h3.5v15H14z"/></svg></span><span>Pause</span></button>
+              <button type="button" class="act" aria-pressed="true"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z"/></svg></span><span>Love</span></button>
+              <button type="button" class="act" aria-pressed="false"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span><span>Nah</span></button>
+              <button type="button" class="act" aria-pressed="false"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span><span>Save</span></button>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <div class="demo-entry">
+        <div class="demo-entry-head"><h3>Media list</h3><span class="badge ok">extracted</span></div>
+        <p class="muted small">The same card as a row. On a phone the chevron folds the info and the actions open; from 900px everything is on one line.</p>
+        <div class="media-list">
+          <article class="media row tint" style="--h:55;--c:.045;--blob-c:.10;--accent-c:.14">
+            <span class="row-num" aria-hidden="true">1</span>
+            <div class="blob"></div>
+            <div class="media-body">
+              <h3 class="title marquee"><span>Blood orange</span></h3>
+              <p class="subtitle marquee"><span>Sorbet<span class="row-tags-inline"> · Citrus · Winter</span></span></p>
+            </div>
+            <div class="media-info"><p class="line marquee"><span>Like “Yuzu”, which you keep coming back to</span></p></div>
+            <div class="row-tags marquee" aria-label="Tags"><span><span class="pill">Citrus</span><span class="pill">Winter</span></span></div>
+            <button type="button" class="act primary" aria-label="Play Blood orange"><span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z"/></svg></span></button>
+            <div class="media-actions">
+              <button type="button" class="act" aria-pressed="false" title="Love"><span class="icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z"/></svg></span><span class="visually-hidden">Love</span></button>
+              <button type="button" class="act" aria-pressed="false" title="Nah"><span class="icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span><span class="visually-hidden">Nah</span></button>
+              <button type="button" class="act" aria-pressed="false" title="Save"><span class="icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span><span class="visually-hidden">Save</span></button>
+            </div>
+            <button type="button" class="row-toggle" aria-expanded="false" aria-label="More about Blood orange"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+          </article>
+          <article class="media row tint" style="--h:285;--c:.04;--blob-c:.09;--accent-c:.14">
+            <span class="row-num" aria-hidden="true">2</span>
+            <div class="blob"></div>
+            <div class="media-body">
+              <h3 class="title marquee"><span>Lavender honey</span></h3>
+              <p class="subtitle marquee"><span>Ice cream<span class="row-tags-inline"> · Floral</span></span></p>
+            </div>
+            <div class="media-info"><p class="line marquee"><span>From a maker you follow</span></p></div>
+            <div class="row-tags marquee" aria-label="Tags"><span><span class="pill">Floral</span></span></div>
+            <button type="button" class="act primary" aria-label="Play Lavender honey"><span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z"/></svg></span></button>
+            <div class="media-actions">
+              <button type="button" class="act" aria-pressed="false" title="Love"><span class="icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z"/></svg></span><span class="visually-hidden">Love</span></button>
+              <button type="button" class="act" aria-pressed="false" title="Nah"><span class="icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span><span class="visually-hidden">Nah</span></button>
+              <button type="button" class="act" aria-pressed="false" title="Save"><span class="icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span><span class="visually-hidden">Save</span></button>
+            </div>
+            <button type="button" class="row-toggle" aria-expanded="false" aria-label="More about Lavender honey"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+          </article>
+        </div>
+      </div>
+
+      <div class="demo-entry demo-inline">
+        <div class="demo-entry-head"><h3>Dock</h3><span class="badge ok">extracted</span></div>
+        <p class="muted small">A floating bar for whatever is playing, running or selected. Fixed to the bottom in real use; shown inline here. With <code>.tint</code> its main button takes the current item's hue.</p>
+        <div class="dock tint" style="--h:155;--accent-c:.11">
+          <button type="button" class="dock-button primary" aria-label="Pause"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.5 4.5h3.5v15H6.5zM14 4.5h3.5v15H14z"/></svg></button>
+          <div class="dock-body">
+            <div class="name">Mint and cucumber</div>
+            <div class="muted small">0:12 of 0:30</div>
+            <div class="progress" aria-hidden="true"><div style="width:40%"></div></div>
+          </div>
+          <a class="dock-link" href="#top">Open the recipe</a>
+          <button type="button" class="dock-button soft" aria-label="Next"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 5.5v13l9.5-6.5zM16 5.5h3v13h-3z"/></svg></button>
+        </div>
+      </div>
+
+      <div class="demo-entry">
+        <div class="demo-entry-head"><h3>Entries</h3><span class="badge ok">extracted</span></div>
+        <h3 class="eyebrow">Today</h3>
+        <div class="entries" style="margin-bottom:0">
+          <article class="entry busy">
+            <div class="entry-head"><time>09:41</time><span class="entry-title">Refreshing the digest</span><span class="who small">Sam</span><span class="badge">Running</span><span class="muted small">40 s so far</span></div>
+            <p class="entry-summary">Reading 312 sources; 48 new items so far.</p>
+            <ol class="steps">
+              <li><time>09:41:02</time> Started</li>
+              <li><time>09:41:19</time> 200 sources read</li>
+              <li class="warn"><time>09:41:33</time> One source is slow; waiting</li>
+            </ol>
+          </article>
+          <article class="entry bad">
+            <div class="entry-head"><time>08:00</time><span class="entry-title">Weekly export</span><span class="badge bad">Failed</span></div>
+            <p class="entry-summary">The storage bucket refused the upload. It retries on its own.</p>
+            <details><summary class="small">All 4 steps</summary><ol class="steps"><li><time>08:00:00</time> Started</li><li class="bad"><time>08:00:12</time> Upload refused (403)</li></ol></details>
+            <p class="entry-meta muted small">Queued 07:59 · started 08:00 · finished 08:00</p>
+          </article>
+          <article class="entry">
+            <div class="entry-head"><time>03:00</time><span class="entry-title">Nightly refresh</span><span class="badge ok">Done</span><span class="muted small">2 min</span></div>
+            <p class="entry-summary">Picked 24 new items and their colours.</p>
+          </article>
+        </div>
+      </div>
+
+      <div class="demo-entry">
+        <div class="demo-entry-head"><h3>Gallery</h3><span class="badge ok">extracted</span></div>
+        <ul class="gallery" style="margin-bottom:0">
+          <li class="gallery-item">
+            <img class="gallery-cover" alt="" width="64" height="64" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23fff1b8'/%3E%3Cstop offset='1' stop-color='%239a5600'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='10' height='10' fill='url(%23g)'/%3E%3C/svg%3E">
+            <div class="gallery-body"><a class="gallery-name" href="#top">Summer menu</a><p class="small muted">24 items · Public</p><span class="badge">Made here</span></div>
+          </li>
+          <li class="gallery-item">
+            <div class="gallery-cover" aria-hidden="true"></div>
+            <div class="gallery-body"><a class="gallery-name" href="#top">Things to try</a><p class="small muted">By Alex · 61 items · Collaborative</p></div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="demo-entry">
+        <div class="demo-entry-head"><h3>Dialog and grid</h3><span class="badge">designed</span></div>
+        <p class="muted small">The native <code>&lt;dialog&gt;</code> dressed as a card; open it with <code>showModal()</code>. <code>.grid</code> is the auto-filling 300px grid the media grid and gallery already use.</p>
+        <button type="button" class="secondary" id="open-dialog">Open the dialog</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ Tinted ══════════════════════════════════════════════════════════ -->
+  <section id="tinted">
+    <h2>Tinted</h2>
+    <p class="muted small">tint.css: colour from content. Four numbers on a card, set inline, and its surface, blob, meter, pill and primary button take that hue; on a bar's row or the dock, only the parts take it. The scheme keeps lightness and ink, so the same numbers work in dark. Turn tint.css off above to see the fallback.</p>
+
+    <div class="card">
+      <div class="demo-entry demo-sliders">
+        <div class="demo-entry-head"><h3>Hue and chroma</h3></div>
+        <div class="grid" style="margin-bottom:0">
+          <div>
+            <label>Hue <span class="muted small" id="hue-out">340</span><input type="range" id="hue" min="0" max="360" value="340"></label>
+            <label style="margin-top:12px">Chroma <span class="muted small" id="chroma-out">0.10</span><input type="range" id="chroma" min="0" max="0.16" step="0.005" value="0.10"></label>
+            <p class="muted small" style="margin-top:12px">A vivid input gives a stronger blob and button; the card itself stays pastel. Under 0.03 the hue is dropped and the card is stone.</p>
+          </div>
+          <article class="media tint" id="hue-card" style="--h:340;--c:.045;--blob-c:.10;--accent-c:.115">
+            <div class="blob"></div>
+            <div class="media-body">
+              <h3 class="title">Any hue</h3>
+              <p class="subtitle">--h, --c, --blob-c, --accent-c</p>
+            </div>
+            <div class="media-info"><p class="line">The panel is always the surface colour.</p><p class="line tags">Blob · Button · Ring</p></div>
+            <div class="media-actions">
+              <button type="button" class="act primary"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z"/></svg></span><span>Primary</span></button>
+              <button type="button" class="act"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span><span>Plain</span></button>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <div class="demo-entry">
+        <div class="demo-entry-head"><h3>Twelve hues around the wheel</h3></div>
+        <p class="muted small">A category palette: the source app spread its twelve genres like this, with the chroma per family tuned by hand. Any set of categories can do the same.</p>
+        <div class="demo-hues" id="hue-wheel"></div>
+      </div>
+
+      <div class="demo-entry">
+        <div class="demo-entry-head"><h3>From an image</h3></div>
+        <p class="muted small">Pick a picture. Its most vivid main colour becomes the card's hue, the way the source app reads album covers. Nothing leaves your browser.</p>
+        <div class="grid" style="margin-bottom:0">
+          <div>
+            <input type="file" id="hue-file" accept="image/*">
+            <p class="muted small" id="hue-file-out" style="margin-top:8px">The image is cut down to a few colours; each is scored by how much of the image it covers and how colourful it is, and near-white and near-black count for little.</p>
+          </div>
+          <article class="media tint" id="image-card">
+            <div class="blob"><img class="cover" id="image-cover" alt="" hidden></div>
+            <div class="media-body"><h3 class="title">Your image</h3><p class="subtitle">stone until you pick one</p></div>
+            <div class="media-info"><p class="line" id="image-line">No image yet.</p></div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ Assembled ═══════════════════════════════════════════════════════
+       The droppability proof. Kit classes only; the only inline styles are
+       the tint inputs, which are the tint layer's contract. -->
+  <section id="assembled">
+    <h2>Assembled</h2>
+    <p class="muted small">A small page built from kit classes only, with no bespoke CSS.</p>
+
+    <h1 style="margin-top:8px">Hey Sam</h1>
+    <p class="lede">1,284 plays this week.</p>
+
+    <div class="card notice">
+      <p><strong>Connect your account to start.</strong> From then on, the app records everything you make.</p>
+      <a class="button" href="#assembled">Connect</a>
+    </div>
+
+    <div class="tiles">
+      <div class="tile"><div class="value">1,284</div><div class="label">plays, last 7 days</div></div>
+      <div class="tile"><div class="value">18,402</div><div class="label">plays, all time</div></div>
+      <div class="tile"><div class="value">962</div><div class="label">hours</div></div>
+      <div class="tile"><div class="value">312</div><div class="label">makers</div></div>
+    </div>
+
+    <div class="section-head">
+      <h2>Discover</h2>
+      <div class="row">
+        <nav class="segmented" aria-label="View"><a href="#assembled" aria-current="true">Cards</a><a href="#assembled">List</a></nav>
+        <button type="button" class="secondary">Run again</button>
+      </div>
+    </div>
+    <nav class="tabs" aria-label="Discover">
+      <a href="#assembled" class="active" aria-current="page">Everything</a>
+      <a href="#assembled"><span class="tab-dot tint" style="--h:350;--accent-c:.15" aria-hidden="true"></span>Berries</a>
+      <a href="#assembled"><span class="tab-dot tint" style="--h:55;--accent-c:.14" aria-hidden="true"></span>Citrus</a>
+      <a href="#assembled"><span class="tab-dot tint" style="--h:155;--accent-c:.11" aria-hidden="true"></span>Herbs</a>
+    </nav>
+    <p class="lede">3 new things to try</p>
+    <div class="strip small">
+      <span>Your weekly list: <a href="#assembled">Discover, week 39</a> <span class="muted">· 24 items · updated Monday</span></span>
+      <button type="button" class="secondary">Update it now</button>
+      <a class="muted" href="#assembled">Settings</a>
+    </div>
+    <div class="media-grid">
+      <article class="media tint" style="--h:350;--c:.045;--blob-c:.10;--accent-c:.15">
+        <div class="blob"><img class="cover" alt="" width="76" height="76" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23ffd6e0'/%3E%3Cstop offset='1' stop-color='%23a14174'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='10' height='10' fill='url(%23g)'/%3E%3Ccircle cx='6.5' cy='3.5' r='2.2' fill='%23fff' fill-opacity='.35'/%3E%3C/svg%3E"></div>
+        <div class="media-body">
+          <h3 class="title marquee"><span>Strawberry and black pepper</span></h3>
+          <p class="subtitle marquee"><span>Sorbet · Summer menu</span></p>
+          <a class="media-link" href="#assembled">Open the recipe</a>
+        </div>
+        <div class="media-info">
+          <p class="line marquee"><span>Like “Raspberry ripple”, which you've made twice</span></p>
+          <p class="line tags marquee"><span>Berries · Frozen · No dairy</span></p>
+        </div>
+        <div class="media-actions">
+          <button type="button" class="act primary"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z"/></svg></span><span>Play</span></button>
+          <button type="button" class="act" aria-pressed="false"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z"/></svg></span><span>Love</span></button>
+          <button type="button" class="act" aria-pressed="false"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span><span>Nah</span></button>
+          <button type="button" class="act" aria-pressed="false"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span><span>Save</span></button>
+        </div>
+      </article>
+      <article class="media tint" style="--h:55;--c:.045;--blob-c:.10;--accent-c:.14">
+        <div class="blob"><img class="cover" alt="" width="76" height="76" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='1' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%23ffe4cc'/%3E%3Cstop offset='1' stop-color='%23a34d00'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='10' height='10' fill='url(%23g)'/%3E%3Ccircle cx='3.5' cy='6.5' r='2.2' fill='%23fff' fill-opacity='.35'/%3E%3C/svg%3E"></div>
+        <div class="media-body">
+          <h3 class="title marquee"><span>Blood orange</span></h3>
+          <p class="subtitle marquee"><span>Sorbet · Winter menu</span></p>
+          <a class="media-link" href="#assembled">Open the recipe</a>
+        </div>
+        <div class="media-info">
+          <p class="line marquee"><span>Sounds like your favourites</span></p>
+          <p class="line tags marquee"><span>Citrus · Frozen</span></p>
+        </div>
+        <div class="media-actions">
+          <button type="button" class="act primary"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z"/></svg></span><span>Play</span></button>
+          <button type="button" class="act" aria-pressed="false"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z"/></svg></span><span>Love</span></button>
+          <button type="button" class="act" aria-pressed="false"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span><span>Nah</span></button>
+          <button type="button" class="act" aria-pressed="false"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span><span>Save</span></button>
+        </div>
+      </article>
+      <article class="media tint" style="--h:232;--c:.04;--blob-c:.08;--accent-c:.10">
+        <div class="blob"></div>
+        <div class="media-body">
+          <h3 class="title marquee"><span>Blueberry and bay</span></h3>
+          <p class="subtitle marquee"><span>Granita · From a maker you follow</span></p>
+          <a class="media-link" href="#assembled">Open the recipe</a>
+        </div>
+        <div class="media-info">
+          <p class="line marquee"><span>Tag: no cover, so the hue comes from the category</span></p>
+          <p class="line tags marquee"><span>Lo-fi · Chill</span></p>
+        </div>
+        <div class="media-actions">
+          <button type="button" class="act primary"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z"/></svg></span><span>Play</span></button>
+          <button type="button" class="act" aria-pressed="false"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z"/></svg></span><span>Love</span></button>
+          <button type="button" class="act" aria-pressed="false"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span><span>Nah</span></button>
+          <button type="button" class="act" aria-pressed="false"><span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span><span>Save</span></button>
+        </div>
+      </article>
+    </div>
+
+    <div class="section-head"><h2>By category</h2><a class="small" href="#assembled">Download CSV</a></div>
+    <div class="card">
+      <ul class="bars">
+        <li class="tint" style="--h:350;--c:.045;--accent-c:.15"><span class="bar-name">Berries</span><span class="bar"><span style="width:44%"></span></span><span class="num small">44%</span></li>
+        <li class="tint" style="--h:55;--c:.045;--accent-c:.14"><span class="bar-name">Citrus</span><span class="bar"><span style="width:31%"></span></span><span class="num small">31%</span></li>
+        <li class="tint" style="--h:155;--c:.045;--accent-c:.11"><span class="bar-name">Herbs</span><span class="bar"><span style="width:14%"></span></span><span class="num small">14%</span></li>
+        <li class="tint" style="--h:232;--c:.04;--accent-c:.10"><span class="bar-name">Lo-fi and chill</span><span class="bar"><span style="width:8%"></span></span><span class="num small">8%</span></li>
+        <li class="tint"><span class="bar-name">No match</span><span class="bar"><span style="width:3%"></span></span><span class="num small">3%</span></li>
+      </ul>
+    </div>
+
+    <div class="section-head"><h2>Top makers</h2><a class="small" href="#assembled">Download CSV</a></div>
+    <div class="card scroll">
+      <table>
+        <thead><tr><th>#</th><th>Maker</th><th class="num">Plays</th></tr></thead>
+        <tbody>
+          <tr><td class="muted">1</td><td class="name">Sicilian Citrus Co.</td><td class="num">412</td></tr>
+          <tr><td class="muted">2</td><td class="name">Orchard House</td><td class="num">380</td></tr>
+          <tr><td class="muted">3</td><td class="name">Hedgerow</td><td class="num">241</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Settings</h2>
+    <div class="card">
+      <form class="stack" onsubmit="return false">
+        <label class="check"><input type="checkbox" checked> Update the weekly list every Monday</label>
+        <label>List name <input type="text" value="Discover, week 39" maxlength="100"></label>
+        <button type="submit">Save</button>
+      </form>
+    </div>
+    <div class="card row">
+      <span>Signed in as <strong>Sam</strong>.</span>
+      <button type="button" class="secondary">Sign out</button>
+    </div>
+    <p class="muted small">peach-sorbet demo · everything above is kit classes.</p>
+  </section>
+</main>
+
+<dialog id="demo-dialog">
+  <h2>Delete this list?</h2>
+  <p>It takes 24 items with it. The things themselves stay in your library.</p>
+  <div class="row" style="justify-content:flex-end">
+    <button type="button" class="secondary" id="close-dialog">Cancel</button>
+    <button type="button" class="danger">Delete</button>
+  </div>
+</dialog>
+
+<script>
+  // ── Swatches, read off the computed tokens for both schemes ─────────────
+  const groups = {
+    'sw-colour': ['--bg', '--surface', '--text', '--muted', '--line', '--button',
+                  '--accent', '--accent-ink', '--accent-soft',
+                  '--warn', '--warn-soft', '--bad', '--bad-soft', '--good-soft',
+                  '--chart-1', '--chart-2', '--tint-ink'],
+    'sw-pastel': ['--lavender', '--mint', '--butter', '--pink', '--blue', '--peach'],
+  };
+  const light = document.createElement('div'); light.dataset.scheme = 'light';
+  const dark = document.createElement('div'); dark.dataset.scheme = 'dark';
+  document.body.append(light, dark);
+  for (const [id, names] of Object.entries(groups)) {
+    const host = document.getElementById(id);
+    for (const name of names) {
+      const l = getComputedStyle(light).getPropertyValue(name).trim();
+      const d = getComputedStyle(dark).getPropertyValue(name).trim();
+      const el = document.createElement('div');
+      el.className = 'swatch';
+      el.innerHTML = `<div class="swatch-chips"><i style="background:${l}"></i><i style="background:${d}"></i></div>` +
+        `<div class="swatch-meta"><b>${name}</b><span>${l} · ${d}</span></div>`;
+      host.appendChild(el);
+    }
+  }
+  light.remove(); dark.remove();
+  // Count the tokens by reading the stylesheet, so the number cannot go stale.
+  try {
+    const names = new Set();
+    for (const sheet of document.styleSheets) {
+      if (!(sheet.href || '').endsWith('core.css')) continue;
+      for (const rule of sheet.cssRules) {
+        if (!rule.style) continue;
+        for (const prop of rule.style) if (prop.startsWith('--')) names.add(prop);
+      }
+    }
+    if (names.size) document.getElementById('token-count').textContent = `${names.size} tokens in core.css`;
+  } catch (_) { /* leave the static label */ }
+
+  // ── Scheme switch: light, dark, or follow the device ────────────────────
+  const root = document.documentElement;
+  const media = window.matchMedia('(prefers-color-scheme: dark)');
+  const follow = () => { root.dataset.scheme = media.matches ? 'dark' : 'light'; };
+  const schemeBtns = [...document.querySelectorAll('[data-set-scheme]')];
+  // If the page loaded with a scheme already set, press the matching button.
+  if (root.dataset.scheme) schemeBtns.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.setScheme === root.dataset.scheme)));
+  schemeBtns.forEach(btn => btn.addEventListener('click', () => {
+    media.removeEventListener('change', follow);
+    if (btn.dataset.setScheme === 'device') { follow(); media.addEventListener('change', follow); }
+    else root.dataset.scheme = btn.dataset.setScheme;
+    schemeBtns.forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+  }));
+
+  // ── Tier toggle ─────────────────────────────────────────────────────────
+  const tintSheet = document.getElementById('tint-css');
+  const tintBtn = document.getElementById('toggle-tint');
+  tintBtn.addEventListener('click', () => {
+    tintSheet.disabled = !tintSheet.disabled;
+    tintBtn.textContent = tintSheet.disabled ? 'Turn tint.css back on' : 'Turn tint.css off';
+  });
+
+  // ── Marquee: lines that don't fit glide sideways and back ───────────────
+  // The kit's one measured behaviour. Under Reduce Motion it still glides
+  // (the line is unreadable otherwise), only slower and with longer rests.
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  function measure() {
+    document.querySelectorAll('.marquee').forEach(line => {
+      const text = line.firstElementChild;
+      if (!text) return;
+      line.classList.remove('scrolling');
+      const overflow = text.offsetWidth - line.clientWidth;
+      if (overflow > 2) {
+        const speed = reduce.matches ? 12 : 25; // px per second
+        line.style.setProperty('--glide-shift', -overflow + 'px');
+        line.style.setProperty('--glide-duration', Math.max(reduce.matches ? 12 : 7, 5 + overflow / speed) + 's');
+        line.classList.add('scrolling');
+      }
+    });
+  }
+  let timer;
+  const later = () => { clearTimeout(timer); timer = setTimeout(measure, 120); };
+  window.addEventListener('resize', later);
+  reduce.addEventListener('change', measure);
+  if (document.fonts) document.fonts.ready.then(measure);
+  measure();
+
+  // ── Row toggle: on a phone, a row's info and actions fold open ──────────
+  document.addEventListener('click', event => {
+    const toggle = event.target.closest('.row-toggle');
+    if (!toggle) return;
+    const row = toggle.closest('.media.row');
+    const open = !row.classList.contains('open');
+    row.classList.toggle('open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    if (open) later();
+  });
+
+  // ── Dialog ──────────────────────────────────────────────────────────────
+  const dialog = document.getElementById('demo-dialog');
+  document.getElementById('open-dialog').addEventListener('click', () => dialog.showModal());
+  document.getElementById('close-dialog').addEventListener('click', () => dialog.close());
+
+  // ── Tint: sliders ───────────────────────────────────────────────────────
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  function paletteFor(hue, chroma) {
+    // The source app's recipe for a colour read from an image: a dull input
+    // gives a quiet card, a vivid one a stronger blob and button, all pastel.
+    if (chroma < 0.03) return { h: 70, c: 0.012, blob: 0.015, accent: 0.02, stone: true };
+    return { h: hue, c: 0.045, blob: clamp(chroma, 0.05, 0.10), accent: clamp(chroma * 1.15, 0.07, 0.15), stone: false };
+  }
+  function applyPalette(el, p) {
+    el.style.setProperty('--h', p.h.toFixed(0));
+    el.style.setProperty('--c', p.c.toFixed(3));
+    el.style.setProperty('--blob-c', p.blob.toFixed(3));
+    el.style.setProperty('--accent-c', p.accent.toFixed(3));
+  }
+  const hue = document.getElementById('hue'), chroma = document.getElementById('chroma');
+  const hueCard = document.getElementById('hue-card');
+  function slide() {
+    document.getElementById('hue-out').textContent = hue.value;
+    document.getElementById('chroma-out').textContent = Number(chroma.value).toFixed(3);
+    applyPalette(hueCard, paletteFor(Number(hue.value), Number(chroma.value)));
+  }
+  hue.addEventListener('input', slide); chroma.addEventListener('input', slide); slide();
+
+  // ── Tint: twelve hues ───────────────────────────────────────────────────
+  const wheel = document.getElementById('hue-wheel');
+  for (let h = 0; h < 360; h += 30) {
+    const chip = document.createElement('span');
+    chip.className = 'chip tint';
+    chip.style.cssText = `--h:${h};--c:.045;--accent-c:.14;display:inline-flex;align-items:center;gap:8px`;
+    chip.innerHTML = `<span class="dot mini" aria-hidden="true" style="margin:0"></span>${h}°`;
+    wheel.appendChild(chip);
+  }
+
+  // ── Tint: hue from an image, in the browser ─────────────────────────────
+  // A port of the source app's reader: shrink the image, bucket the pixels
+  // by hue, score each bucket by coverage × chroma^1.2 with near-white and
+  // near-black counting for a fifth, and take the best bucket's mean.
+  function oklch(r, g, b) {
+    const lin = c => { c /= 255; return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
+    r = lin(r); g = lin(g); b = lin(b);
+    const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+    const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+    const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+    const L = 0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s;
+    const a = 1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s;
+    const bb = 0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s;
+    return [L, Math.hypot(a, bb), (Math.atan2(bb, a) * 180 / Math.PI + 360) % 360];
+  }
+  function readHue(img) {
+    const canvas = document.createElement('canvas'); canvas.width = canvas.height = 32;
+    const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, 32, 32);
+    const px = ctx.getImageData(0, 0, 32, 32).data;
+    const bins = Array.from({ length: 24 }, () => ({ score: 0, sin: 0, cos: 0, chroma: 0, n: 0 }));
+    for (let i = 0; i < px.length; i += 4) {
+      const [L, C, H] = oklch(px[i], px[i + 1], px[i + 2]);
+      const bin = bins[Math.floor(H / 15) % 24];
+      const w = C ** 1.2 * (L > 0.25 && L < 0.92 ? 1 : 0.2);
+      bin.score += w; bin.sin += Math.sin(H * Math.PI / 180) * w; bin.cos += Math.cos(H * Math.PI / 180) * w;
+      bin.chroma += C; bin.n++;
+    }
+    const best = bins.reduce((a, b) => (b.score > a.score ? b : a));
+    if (!best.n) return [70, 0];
+    return [(Math.atan2(best.sin, best.cos) * 180 / Math.PI + 360) % 360, best.chroma / best.n];
+  }
+  const fileInput = document.getElementById('hue-file');
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+    const img = new Image();
+    img.onload = () => {
+      const [h, c] = readHue(img);
+      const p = paletteFor(h, c);
+      applyPalette(document.getElementById('image-card'), p);
+      const cover = document.getElementById('image-cover');
+      cover.src = img.src; cover.hidden = false;
+      document.getElementById('image-line').textContent = p.stone
+        ? `Nearly grey (chroma ${c.toFixed(3)}), so the card is stone.`
+        : `Hue ${h.toFixed(0)}°, chroma ${c.toFixed(3)}.`;
+      document.getElementById('hue-file-out').textContent = file.name;
+    };
+    img.src = URL.createObjectURL(file);
+  });
+</script>
+</body>
+</html>
