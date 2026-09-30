@@ -90,7 +90,6 @@
       <button type="button" data-set-scheme="dark" aria-pressed="false">Dark</button>
       <button type="button" data-set-scheme="device" aria-pressed="false">Match my device</button>
     </div>
-    <button type="button" class="secondary" id="toggle-tint">Turn tint.css off</button>
   </div>
   <p class="muted small">This page is the kit's own shell: a sidebar on a wide screen, a floating tab bar on a phone. Resize it.</p>
 
@@ -520,7 +519,11 @@
   <!-- ══ Tinted ══════════════════════════════════════════════════════════ -->
   <section id="tinted">
     <h2>Tinted</h2>
-    <p class="muted small">tint.css: colour from content. Four numbers on a card, set inline, and its surface, blob, meter, pill and primary button take that hue; on a bar's row or the dock, only the parts take it. The scheme keeps lightness and ink, so the same numbers work in dark. Turn tint.css off above to see the fallback.</p>
+    <p class="muted small">tint.css: colour from content. Four numbers on a card, set inline, and its surface, blob, meter, pill and primary button take that hue; on a bar's row or the dock, only the parts take it. The scheme keeps lightness and ink, so the same numbers work in dark.</p>
+    <div class="strip small">
+      <span>The second file is optional. Turn it off to see what <code>core.css</code> does on its own: the pastel rotation, and purple wherever a tint was.</span>
+      <button type="button" class="secondary" id="toggle-tint">Turn tint.css off</button>
+    </div>
 
     <div class="card">
       <div class="demo-entry demo-sliders">
@@ -767,6 +770,30 @@
     else root.dataset.scheme = btn.dataset.setScheme;
     schemeBtns.forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
   }));
+
+  // ── Sidebar: the section in view stays selected ─────────────────────────
+  // Clicking a tab jumps to its section; the browser then scrolls, and the
+  // selection is read off the scroll position so it also follows you down.
+  const navTabs = [...document.querySelectorAll('.nav-tab[href^="#"]')];
+  const sections = navTabs.map(t => document.getElementById(t.getAttribute('href').slice(1))).filter(Boolean);
+  function selectSection() {
+    const line = window.scrollY + 140; // the section whose top is above this line is the current one
+    let current = sections[0];
+    for (const section of sections) if (section.offsetTop <= line) current = section;
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) current = sections[sections.length - 1];
+    navTabs.forEach(t => {
+      if (t.getAttribute('href') === '#' + current.id) t.setAttribute('aria-current', 'page');
+      else t.removeAttribute('aria-current');
+    });
+  }
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { selectSection(); ticking = false; });
+  });
+  window.addEventListener('hashchange', selectSection);
+  selectSection();
 
   // ── Tier toggle ─────────────────────────────────────────────────────────
   const tintSheet = document.getElementById('tint-css');
