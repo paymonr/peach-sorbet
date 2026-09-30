@@ -1,0 +1,43 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   peach-sorbet — tint.css
+   Colour from content. Optional; delete it and every tinted surface goes back
+   to the pastel rotation and the purple accent, and nothing else changes.
+
+   .tint carries a hue. Give the element four numbers inline:
+
+     <article class="media tint" style="--h: 340; --c: .045; --blob-c: .10; --accent-c: .14">
+
+   A card, a media card or a chip paints its own surface with the hue. Any
+   element with .tint passes it to the parts inside: the blob, a meter, a pill,
+   a dot, a progress bar, and the one primary button. A bar's row or the dock
+   carries .tint without changing its own background, the way the source did.
+
+   The scheme (core.css) owns lightness and ink, so the same four numbers read
+   correctly in light and dark. Every value here is a core.css token or one of
+   the four inputs; this file defines nothing.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Surfaces that paint themselves with the hue. */
+.card.tint, .media.tint, .chip.tint { background: oklch(var(--tint-l) var(--c) var(--h)); }
+
+/* A row is a lighter, quieter version of its card. */
+.media.row.tint { background: oklch(calc(var(--tint-l) + 3%) calc(var(--c) * 0.7) var(--h)); }
+
+/* Parts inside any element that carries a hue. */
+.tint .blob { background: oklch(var(--tint-blob-l) var(--blob-c) var(--h)); }
+.tint .bar { background: oklch(var(--tint-l) var(--c) var(--h)); }
+.tint .bar > span,
+.tint .progress > div,
+.tint .dot, .dot.tint,
+.tab-dot.tint { background: oklch(var(--tint-accent-l) var(--accent-c) var(--h)); }
+.tint .pill { background: oklch(calc(var(--tint-l) - 4%) calc(var(--c) + 0.01) var(--h)); }
+
+/* The one filled button on a tinted card, and the dock's main button. */
+.tint .act.primary .icon,
+.tint .dock-button.primary {
+  background: oklch(var(--tint-accent-l) var(--accent-c) var(--h));
+  color: var(--tint-ink);
+}
+
+/* Selected: a ring in the element's own accent. */
+.tint.selected { box-shadow: 0 0 0 3px oklch(var(--tint-accent-l) var(--accent-c) var(--h)); }
